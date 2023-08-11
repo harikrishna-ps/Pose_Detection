@@ -48,117 +48,120 @@ mp_pose = mp.solutions.pose
 mp_drawing = mp.solutions.drawing_utils
 pose =  mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
-def frame_processing(frame):
+def frame_processing(image):
+    
+    try:
+        # Recolor image to RGB
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         
-    # Recolor image to RGB
-    image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-    
-    # Make detection
-    results = pose.process(image)
-    
-    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-    
-    if results.pose_landmarks:
+        # Make detection
+        results = pose.process(image)
+        
+        image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+        
+        if results.pose_landmarks:
 
-        landmarks = results.pose_landmarks.landmark
-    
-        # Get left arm coordinates
-        left_shoulder = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
-        left_elbow = [landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].x,landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y]
-        left_wrist = [landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].x,landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y]
-        left_hip = [landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].x,landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y]
+            landmarks = results.pose_landmarks.landmark
         
-            # Get right arm coordinates
-        right_shoulder = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
-        right_elbow = [landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y]
-        right_wrist = [landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y]
-        right_hip = [landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y]
-        
-        # Calculate angles for left arm
-        angle1_left = calculate_angle(left_shoulder, left_elbow, left_wrist)
-        angle2_left = calculate_angle(left_hip, left_shoulder, left_elbow)
-        
-        # Calculate angles for right arm
-        angle1_right = calculate_angle(right_shoulder, right_elbow, right_wrist)
-        angle2_right = calculate_angle(right_hip, right_shoulder, right_elbow)
-        
-        # cv2.putText(image, f"{angle1_left:.2f}", 
-        #             tuple(np.multiply(left_elbow, [640, 480]).astype(int)), 
-        #             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
-        # cv2.putText(image, f"{angle1_right:.2f}", 
-        #             tuple(np.multiply(right_elbow, [640, 480]).astype(int)), 
-        #             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
-
-        # # Additional lines to show angle2
-        # cv2.putText(image, f"{angle2_left:.2f}", 
-        #             tuple(np.multiply(left_shoulder, [640, 480]).astype(int)), 
-        #             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
-        # cv2.putText(image, f"{angle2_right:.2f}", 
-        #             tuple(np.multiply(right_shoulder, [640, 480]).astype(int)), 
-        #             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
-
-        if option=="Hands Up":
-            if angle1_left > 160 and 160 < angle2_left < 190 and angle1_right > 160 and 160 < angle2_right < 190:
-                stage = True
-            else:
-                stage = False
-            if stage==True:
-                mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
-                                        mp_drawing.DrawingSpec(color=(0, 255, 0), thickness=2, circle_radius=2),
-                                        mp_drawing.DrawingSpec(color=(0, 255, 0), thickness=2, circle_radius=2)
-                                        )
-            else:
-                mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
-                                        mp_drawing.DrawingSpec(color=(245, 117, 66), thickness=2, circle_radius=2),
-                                        mp_drawing.DrawingSpec(color=(245, 66, 230), thickness=2, circle_radius=2)
-                                        )
-        
-        elif option=="Wide Hands":
-            if angle1_left > 155 and 80 < angle2_left < 110 and angle1_right > 155 and 80 < angle2_right < 110:
-                stage = True
-            else:
-                stage = False
-            if stage==True:
-                mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
-                                        mp_drawing.DrawingSpec(color=(0, 255, 0), thickness=2, circle_radius=2),
-                                        mp_drawing.DrawingSpec(color=(0, 255, 0), thickness=2, circle_radius=2)
-                                        )
-            else:
-                mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
-                                        mp_drawing.DrawingSpec(color=(245, 117, 66), thickness=2, circle_radius=2),
-                                        mp_drawing.DrawingSpec(color=(245, 66, 230), thickness=2, circle_radius=2)
-                                        )
+            # Get left arm coordinates
+            left_shoulder = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
+            left_elbow = [landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].x,landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y]
+            left_wrist = [landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].x,landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y]
+            left_hip = [landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].x,landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y]
             
-        elif option=="Yoga Pose":
-            image_data = {}
-            for i in range(33):
-                image_data[f'{mp_pose.PoseLandmark(i).name}-x'] = results.pose_landmarks.landmark[mp_pose.PoseLandmark(i).value].x
-                image_data[f'{mp_pose.PoseLandmark(i).name}-y'] = results.pose_landmarks.landmark[mp_pose.PoseLandmark(i).value].y
-                image_data[f'{mp_pose.PoseLandmark(i).name}-z'] = results.pose_landmarks.landmark[mp_pose.PoseLandmark(i).value].z
-                image_data[f'{mp_pose.PoseLandmark(i).name}-visibility'] = results.pose_landmarks.landmark[mp_pose.PoseLandmark(i).value].visibility
+                # Get right arm coordinates
+            right_shoulder = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
+            right_elbow = [landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y]
+            right_wrist = [landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y]
+            right_hip = [landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y]
+            
+            # Calculate angles for left arm
+            angle1_left = calculate_angle(left_shoulder, left_elbow, left_wrist)
+            angle2_left = calculate_angle(left_hip, left_shoulder, left_elbow)
+            
+            # Calculate angles for right arm
+            angle1_right = calculate_angle(right_shoulder, right_elbow, right_wrist)
+            angle2_right = calculate_angle(right_hip, right_shoulder, right_elbow)
+            
+            # cv2.putText(image, f"{angle1_left:.2f}", 
+            #             tuple(np.multiply(left_elbow, [640, 480]).astype(int)), 
+            #             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
+            # cv2.putText(image, f"{angle1_right:.2f}", 
+            #             tuple(np.multiply(right_elbow, [640, 480]).astype(int)), 
+            #             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
 
-            test_df = pd.DataFrame([image_data])
-            predictions_encoded = model.predict(test_df)
-            predictions = label_encoder.inverse_transform(predictions_encoded.argmax(axis=1))
-            for pred, conf_score in zip(predictions, predictions_encoded.max(axis=1)):
-                if conf_score >= confidence_threshold:
-                    cv2.putText(image, f"Prediction: {pred}", (30,30), 
-                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
-                    
-                    mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
-                                        mp_drawing.DrawingSpec(color=(0, 255, 0), thickness=2, circle_radius=2),
-                                        mp_drawing.DrawingSpec(color=(0, 255, 0), thickness=2, circle_radius=2)
-                                        )
+            # # Additional lines to show angle2
+            # cv2.putText(image, f"{angle2_left:.2f}", 
+            #             tuple(np.multiply(left_shoulder, [640, 480]).astype(int)), 
+            #             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
+            # cv2.putText(image, f"{angle2_right:.2f}", 
+            #             tuple(np.multiply(right_shoulder, [640, 480]).astype(int)), 
+            #             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA)
+
+            if option=="Hands Up":
+                if angle1_left > 160 and 160 < angle2_left < 190 and angle1_right > 160 and 160 < angle2_right < 190:
+                    stage = True
                 else:
-                    cv2.putText(image, f"Prediction: Unknown", (30,30), 
-                        cv2.FONT_HERSHEY_SIMPLEX, 1, (245, 66, 230), 2, cv2.LINE_AA)
-                    
+                    stage = False
+                if stage==True:
                     mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
-                                        mp_drawing.DrawingSpec(color=(245, 117, 66), thickness=2, circle_radius=2),
-                                        mp_drawing.DrawingSpec(color=(245, 66, 230), thickness=2, circle_radius=2)
-                                        )
+                                            mp_drawing.DrawingSpec(color=(0, 255, 0), thickness=2, circle_radius=2),
+                                            mp_drawing.DrawingSpec(color=(0, 255, 0), thickness=2, circle_radius=2)
+                                            )
+                else:
+                    mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
+                                            mp_drawing.DrawingSpec(color=(245, 117, 66), thickness=2, circle_radius=2),
+                                            mp_drawing.DrawingSpec(color=(245, 66, 230), thickness=2, circle_radius=2)
+                                            )
             
-    return(image)
+            elif option=="Wide Hands":
+                if angle1_left > 155 and 80 < angle2_left < 110 and angle1_right > 155 and 80 < angle2_right < 110:
+                    stage = True
+                else:
+                    stage = False
+                if stage==True:
+                    mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
+                                            mp_drawing.DrawingSpec(color=(0, 255, 0), thickness=2, circle_radius=2),
+                                            mp_drawing.DrawingSpec(color=(0, 255, 0), thickness=2, circle_radius=2)
+                                            )
+                else:
+                    mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
+                                            mp_drawing.DrawingSpec(color=(245, 117, 66), thickness=2, circle_radius=2),
+                                            mp_drawing.DrawingSpec(color=(245, 66, 230), thickness=2, circle_radius=2)
+                                            )
+                
+            elif option=="Yoga Pose":
+                image_data = {}
+                for i in range(33):
+                    image_data[f'{mp_pose.PoseLandmark(i).name}-x'] = results.pose_landmarks.landmark[mp_pose.PoseLandmark(i).value].x
+                    image_data[f'{mp_pose.PoseLandmark(i).name}-y'] = results.pose_landmarks.landmark[mp_pose.PoseLandmark(i).value].y
+                    image_data[f'{mp_pose.PoseLandmark(i).name}-z'] = results.pose_landmarks.landmark[mp_pose.PoseLandmark(i).value].z
+                    image_data[f'{mp_pose.PoseLandmark(i).name}-visibility'] = results.pose_landmarks.landmark[mp_pose.PoseLandmark(i).value].visibility
+
+                test_df = pd.DataFrame([image_data])
+                predictions_encoded = model.predict(test_df)
+                predictions = label_encoder.inverse_transform(predictions_encoded.argmax(axis=1))
+                for pred, conf_score in zip(predictions, predictions_encoded.max(axis=1)):
+                    if conf_score >= confidence_threshold:
+                        cv2.putText(image, f"Prediction: {pred}", (30,30), 
+                            cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
+                        
+                        mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
+                                            mp_drawing.DrawingSpec(color=(0, 255, 0), thickness=2, circle_radius=2),
+                                            mp_drawing.DrawingSpec(color=(0, 255, 0), thickness=2, circle_radius=2)
+                                            )
+                    else:
+                        cv2.putText(image, f"Prediction: Unknown", (30,30), 
+                            cv2.FONT_HERSHEY_SIMPLEX, 1, (245, 66, 230), 2, cv2.LINE_AA)
+                        
+                        mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
+                                            mp_drawing.DrawingSpec(color=(245, 117, 66), thickness=2, circle_radius=2),
+                                            mp_drawing.DrawingSpec(color=(245, 66, 230), thickness=2, circle_radius=2)
+                                            )
+        
+        return(image)    
+    except:    
+        return(image)
 
 def callback(frame):
     frame = frame.to_ndarray(format="bgr24")
